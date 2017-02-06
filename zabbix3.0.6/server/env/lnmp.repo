@@ -1,0 +1,42 @@
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/centos/6/$basearch/
+gpgcheck=0
+enabled=1
+  
+[webtatic]
+name=Webtatic Repository EL6 - $basearch
+#baseurl=http://repo.webtatic.com/yum/el6/$basearch/
+mirrorlist=http://mirror.webtatic.com/yum/el6/$basearch/mirrorlist
+failovermethod=priority
+enabled=0
+gpgcheck=0
+ 
+[epel] 
+name=Extra Packages for Enterprise Linux 6 - $basearch 
+baseurl=http://mirrors.aliyun.com/epel/6/$basearch 
+http://mirrors.aliyuncs.com/epel/6/$basearch 
+#mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch 
+failovermethod=priority 
+enabled=1 
+gpgcheck=0
+ 
+[remi]
+name=Les RPM de remi pour Enterprise Linux 6 - $basearch
+#baseurl=http://rpms.famillecollet.com/enterprise/6/remi/$basearch/
+mirrorlist=http://rpms.famillecollet.com/enterprise/6/remi/mirror
+enabled=1
+gpgcheck=0
+ 
+#[zabbix]
+#name=Zabbix Official Repository-$basearch
+#baseurl=http://repo.zabbix.com/zabbix/3.0/rhel/6/$basearch/
+#enabled=1
+#gpgcheck=0
+  
+#[zabbix-non-supported]
+#name=Zabbix Official Repository non-supported-$basearch
+#baseurl=http://repo.zabbix.com/non-supported/rhel/6/$basearch/
+#enabled=1
+#gpgcheck=0
+ 
