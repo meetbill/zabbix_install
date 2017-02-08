@@ -12,8 +12,10 @@
 目录
 
 > * [安装](doc/install.md)
+> * [Docker](doc/docker.md)
 > * [如何更新此项目](doc/update.md)
 > * [如何高效使用此项目](doc/usage.md)
+> * [提交bug](https://github.com/BillWang139967/zabbix_install/issues)
 
 
 其他相关项目
