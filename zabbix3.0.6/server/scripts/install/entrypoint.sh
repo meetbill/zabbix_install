@@ -25,22 +25,22 @@ if [ ! -f "$_file_marker" ]; then
 	touch "$_file_marker"
 fi
 
-_cmd="/usr/bin/monit -c /etc/monitrc"
+_cmd="/usr/bin/monit"
 _shell="/bin/bash"
 
 case "$1" in
 	start)
         echo "Running Monit... "
-        exec /usr/bin/monit -c /etc/monitrc
+        exec /usr/bin/monit
         $_cmd monitor all
 		;;
 	stop)
 		$_cmd stop all
-    RETVAL=$?
+        RETVAL=$?
 		;;
 	restart)
 		$_cmd restart all
-    RETVAL=$?
+        RETVAL=$?
 		;;
   shell)
     $_shell
