@@ -18,10 +18,10 @@ if [ ! -f "$_file_marker_mysql" ]; then
     tar -zxf create.sql.tar.gz
     mysql -uzabbix -pzabbix zabbix < create.sql
     /sbin/service mysqld stop
-    touch "$_file_marker"
+    touch "$_file_marker_mysql"
 fi
 
-_file_marker_alerts="/etc/zabbix/alert/.alerts-configured"
+_file_marker_alerts="/etc/zabbix/alert/alert.ini"
 
 if [ ! -f "$_file_marker_alerts" ]; then
 cat << EOF > /etc/zabbix/alert/alert.ini 
