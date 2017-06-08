@@ -15,11 +15,6 @@ check process zabbix-server with pidfile /var/run/zabbix/zabbix_server.pid
 	stop program = "/sbin/service zabbix-server stop"
   depends on mysqld
 
-check process zabbix-agent with pidfile /var/run/zabbix/zabbix_agentd.pid
-  every 2 cycles
-	start program = "/sbin/service zabbix-agent start"
-	stop program = "/sbin/service zabbix-agent stop"
-
 check process php-fpm with pidfile /var/run/php-fpm/php-fpm.pid
   every 2 cycles
 	start program = "/sbin/service php-fpm start"
