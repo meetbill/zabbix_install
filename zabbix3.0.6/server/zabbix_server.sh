@@ -52,7 +52,7 @@ cp env/lnmp.repo /etc/yum.repos.d/
 # Install nginx+Mysql+PHP+zabbix
 ##############################################
 info_echo "Install nginx+Mysql+PHP+zabbix......"
-yum -y install nginx php php-fpm php-cli php-common php-gd php-mbstring php-mcrypt php-mysql php-pdo php-devel php-imagick php-xmlrpc php-xml php-bcmath php-dba php-enchant php-yaf  mysql mysql-server monit
+yum -y install nginx php php-fpm php-cli php-common php-gd php-mbstring php-mcrypt php-mysql php-pdo php-devel php-imagick php-xmlrpc php-xml php-bcmath php-dba php-enchant php-yaf  mysql mysql-server
 check_exit "Failed to install Nginx/PHP/Mysql"
 yum -y install ./packages/*.rpm
 #yum -y install zabbix zabbix-get zabbix-agent zabbix-server-mysql zabbix-web-mysql zabbix-server
@@ -94,6 +94,8 @@ chown deploy.deploy -R /var/lib/php
 #/etc/init.d/php-fpm configtest
 
 #######monit配置
+cp packages/monit/monit /usr/bin/
+chmod +x /usr/bin/monit
 cp scripts/install/monitrc /etc/monitrc
 chmod 600 /etc/monitrc
 cp scripts/install/entrypoint.sh /bin/zabbix-monit
@@ -102,3 +104,10 @@ ln -s /bin/zabbix-monit /etc/init.d/zabbix-monit
 chkconfig --add zabbix-monit
 chkconfig zabbix-monit on
 /etc/init.d/zabbix-monit start
+
+#######alerts配置
+mkdir -p /usr/lib/zabbix/alertscripts/
+mkdir -p /etc/zabbix/alert/
+cp scripts/alerts/alerts.py /usr/lib/zabbix/alertscripts/
+chmod +x /usr/lib/zabbix/alertscripts/alerts.py
+cp scripts/alerts/alert.ini_tpl /etc/zabbix/alert/alert.ini

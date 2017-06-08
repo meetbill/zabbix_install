@@ -1,8 +1,8 @@
 #!/bin/bash
 
-_file_marker="/var/lib/mysql/.mysql-configured"
+_file_marker_mysql="/var/lib/mysql/.mysql-configured"
 
-if [ ! -f "$_file_marker" ]; then
+if [ ! -f "$_file_marker_mysql" ]; then
     /usr/bin/mysql_install_db
     /sbin/service mysqld restart
     /usr/bin/mysql_upgrade
@@ -19,6 +19,23 @@ if [ ! -f "$_file_marker" ]; then
     mysql -uzabbix -pzabbix zabbix < create.sql
     /sbin/service mysqld stop
     touch "$_file_marker"
+fi
+
+_file_marker_alerts="/etc/zabbix/alert/.alerts-configured"
+
+if [ ! -f "$_file_marker_alerts" ]; then
+cat << EOF > /etc/zabbix/alert/alert.ini 
+[default]
+smtp_server = smtp.exmail.qq.com 
+# SMTP_SSL(465)/SMTP(25)
+smtp_port = 465 
+smtp_user = xxxxx@qq.com
+smtp_pass = *********
+# SMTP_SSL(True)/SMTP(False)
+smtp_tls = True
+# 提示信息
+smtp_info = sc:
+EOF
 fi
 
 _cmd="/usr/bin/monit -d 20 -Ic /etc/monitrc"

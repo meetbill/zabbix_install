@@ -1,0 +1,11 @@
+[default]
+smtp_server = smtp.exmail.qq.com
+# SMTP_SSL(465)/SMTP(25)
+smtp_port = 465 
+smtp_user = xxxxx@qq.com
+smtp_pass = *********
+# SMTP_SSL(True)/SMTP(False)
+smtp_tls = True
+# 提示信息
+smtp_info = sc:
+            

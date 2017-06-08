@@ -28,7 +28,6 @@ RUN yum -y install \
             php-enchant \
             php-yaf \
             mysql \
-	    monit \
             mysql-server
 
 # Be aware of the Zabbix version number in the  zabbix22-dbfiles-mysql package(!).
@@ -68,8 +67,17 @@ COPY ./conf/zabbix/zabbix_server.conf /etc/zabbix/
 COPY ./scripts/docker/create.sql.tar.gz /tmp/
 
 # Monit
+COPY packages/monit/monit /usr/bin/
+RUN chmod +x /usr/bin/monit
 ADD ./scripts/docker/monitrc /etc/monitrc
 RUN chmod 600 /etc/monitrc
+
+# alertscrips
+RUN mkdir -p /usr/lib/zabbix/alertscripts/
+RUN mkdir -p /etc/zabbix/alert/
+COPY scripts/alerts/alerts.py /usr/lib/zabbix/alertscripts/
+RUN chmod +x /usr/lib/zabbix/alertscripts/alerts.py
+COPY scripts/alerts/alert.ini_tpl /etc/zabbix/alert/alert.ini
 
 # https://github.com/dotcloud/docker/issues/1240#issuecomment-21807183
 RUN echo "NETWORKING=yes" > /etc/sysconfig/network
@@ -84,7 +92,7 @@ RUN chmod 755 /bin/docker-zabbix
 # * Monit
 EXPOSE 10051 80 2812
 
-VOLUME ["/var/lib/mysql", "/usr/lib/zabbix/alertscripts", "/usr/lib/zabbix/externalscripts", "/etc/zabbix/zabbix_agentd.d"]
+VOLUME ["/var/lib/mysql", "/etc/zabbix/alert/", "/usr/lib/zabbix/externalscripts", "/etc/zabbix/zabbix_agentd.d"]
 
 ENTRYPOINT ["/bin/docker-zabbix"]
 CMD ["start"]
