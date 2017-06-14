@@ -2,7 +2,7 @@
 
 FROM centos:centos6
 MAINTAINER meetbill <meetbill@163.com>
-ENV REFRESHED_AT 2017-02-05
+ENV REFRESHED_AT 2017-06-14
 
 # Install EPEL to have MySQL/nginx/php
 COPY ./env/lnmp.repo /etc/yum.repos.d/
@@ -28,7 +28,8 @@ RUN yum -y install \
             php-enchant \
             php-yaf \
             mysql \
-            mysql-server
+            mysql-server && \
+    yum clean all
 
 # Be aware of the Zabbix version number in the  zabbix22-dbfiles-mysql package(!).
 COPY ./packages /tmp/
@@ -37,10 +38,8 @@ RUN  yum -y install \
     /tmp/zabbix-agent-3.0.6-1.el6.x86_64.rpm \
     /tmp/zabbix-get-3.0.6-1.el6.x86_64.rpm \
     /tmp/zabbix-web-3.0.6-1.el6.noarch.rpm \
-    /tmp/zabbix-web-mysql-3.0.6-1.el6.noarch.rpm
-
-# YUM Cleanup
-RUN yum clean all && rm -rf /tmp/*
+    /tmp/zabbix-web-mysql-3.0.6-1.el6.noarch.rpm && \
+    yum clean all && rm -rf /tmp/*
 
 # MySQL
 COPY ./conf/mysql/my.cnf /etc/my.cnf
@@ -49,8 +48,7 @@ COPY ./conf/mysql/my.cnf /etc/my.cnf
 COPY ./conf/nginx/nginx.conf /etc/nginx/
 COPY conf/php/php.ini /etc/
 COPY conf/php/www.conf /etc/php-fpm.d/
-RUN useradd deploy
-RUN chown deploy.deploy -R /var/lib/php
+RUN useradd deploy && chown deploy.deploy -R /var/lib/php
 
 COPY zabbix.tar.gz /tmp/
 # Zabbix Conf Files
@@ -60,7 +58,7 @@ RUN mkdir -p /data/web/zabbix && \
     ZABBIX_DIR=`ls |grep zabbix-` && \
     mv ${ZABBIX_DIR}/* /data/web/zabbix/ && \
     chown -R deploy.deploy /data/web/zabbix && \
-    yum clean all && rm -rf /tmp/*
+    rm -rf /tmp/*
 
 COPY ./conf/zabbix/zabbix.conf.php /data/web/zabbix/conf/
 COPY ./conf/zabbix/zabbix_server.conf /etc/zabbix/
@@ -68,9 +66,8 @@ COPY ./scripts/docker/create.sql.tar.gz /tmp/
 
 # Monit
 COPY packages/monit/monit /usr/bin/
-RUN chmod +x /usr/bin/monit
 ADD ./scripts/docker/monitrc /etc/monitrc
-RUN chmod 600 /etc/monitrc
+RUN chmod +x /usr/bin/monit && chmod 600 /etc/monitrc
 
 # alertscrips
 RUN mkdir -p /usr/lib/zabbix/alertscripts/
