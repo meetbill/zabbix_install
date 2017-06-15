@@ -48,17 +48,24 @@ COPY ./conf/mysql/my.cnf /etc/my.cnf
 COPY ./conf/nginx/nginx.conf /etc/nginx/
 COPY conf/php/php.ini /etc/
 COPY conf/php/www.conf /etc/php-fpm.d/
-RUN useradd deploy && chown deploy.deploy -R /var/lib/php
+RUN useradd deploy && \
+    chown deploy.deploy -R /var/lib/php && \
+    mkdir -p /data/web
 
-COPY zabbix.tar.gz /tmp/
-# Zabbix Conf Files
-RUN mkdir -p /data/web/zabbix && \
-    cd /tmp/ && \
-    tar -zxf zabbix.tar.gz && \
+
+# Zabbix
+ADD zabbix.tar.gz /data/web/
+RUN cd /data/web/ && \
     ZABBIX_DIR=`ls |grep zabbix-` && \
-    mv ${ZABBIX_DIR}/* /data/web/zabbix/ && \
+    mv ${ZABBIX_DIR} zabbix && \
     chown -R deploy.deploy /data/web/zabbix && \
-    rm -rf /tmp/*
+    mkdir -p /usr/lib/zabbix/alertscripts/ && \
+    mkdir -p /etc/zabbix/alert/
+
+# alertscrips
+COPY scripts/alerts/alerts.py /usr/lib/zabbix/alertscripts/
+COPY scripts/alerts/alert.ini_tpl /etc/zabbix/alert/alert.ini
+RUN chmod +x /usr/lib/zabbix/alertscripts/alerts.py
 
 COPY ./conf/zabbix/zabbix.conf.php /data/web/zabbix/conf/
 COPY ./conf/zabbix/zabbix_server.conf /etc/zabbix/
@@ -66,21 +73,14 @@ COPY ./scripts/docker/create.sql.tar.gz /tmp/
 
 # Monit
 COPY packages/monit/monit /usr/bin/
-ADD ./scripts/docker/monitrc /etc/monitrc
+COPY ./scripts/docker/monitrc /etc/monitrc
 RUN chmod +x /usr/bin/monit && chmod 600 /etc/monitrc
-
-# alertscrips
-RUN mkdir -p /usr/lib/zabbix/alertscripts/
-RUN mkdir -p /etc/zabbix/alert/
-COPY scripts/alerts/alerts.py /usr/lib/zabbix/alertscripts/
-RUN chmod +x /usr/lib/zabbix/alertscripts/alerts.py
-COPY scripts/alerts/alert.ini_tpl /etc/zabbix/alert/alert.ini
 
 # https://github.com/dotcloud/docker/issues/1240#issuecomment-21807183
 RUN echo "NETWORKING=yes" > /etc/sysconfig/network
 
 # Add the script that will start the repo.
-ADD ./scripts/docker/entrypoint.sh /bin/docker-zabbix
+COPY ./scripts/docker/entrypoint.sh /bin/docker-zabbix
 RUN chmod 755 /bin/docker-zabbix
 
 # Expose the Ports used by
