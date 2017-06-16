@@ -49,7 +49,8 @@ COPY ./conf/nginx/nginx.conf /etc/nginx/
 COPY conf/php/php.ini /etc/
 COPY conf/php/www.conf /etc/php-fpm.d/
 RUN useradd deploy && \
-    mkdir -p /data/web
+    mkdir -p /data/web && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 
 # Zabbix

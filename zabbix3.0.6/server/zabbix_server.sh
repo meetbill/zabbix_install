@@ -43,6 +43,17 @@ chkconfig iptables off
 # turn off the selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 setenforce 0   
+
+
+# 时区
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+cat > /etc/sysconfig/clock  << EOF 
+ZONE="Asia/Shanghai"                                                                                                                                                                                                                                      
+UTC=false                
+ARC=false
+EOF
+/sbin/hwclock -w
+
 ##############################################
 # yum repo
 ##############################################
