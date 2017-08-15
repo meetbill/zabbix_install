@@ -1,8 +1,8 @@
-# Version 3.0.6(1.0.1)
+# Version 3.0.6(1.0.2)
 
 FROM centos:centos6
 MAINTAINER meetbill <meetbill@163.com>
-ENV REFRESHED_AT 2017-06-14
+ENV REFRESHED_AT 2017-08-15
 
 # Install EPEL to have MySQL/nginx/php
 COPY ./env/lnmp.repo /etc/yum.repos.d/
