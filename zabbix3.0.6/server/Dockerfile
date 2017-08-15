@@ -29,8 +29,7 @@ RUN yum -y install \
             php-yaf \
             mysql \
             mysql-server && \
-    yum clean all && \
-    chown -R deploy.deploy /var/lib/php
+    yum clean all
 
 # Be aware of the Zabbix version number in the  zabbix22-dbfiles-mysql package(!).
 COPY ./packages /tmp/
@@ -50,6 +49,7 @@ COPY ./conf/nginx/nginx.conf /etc/nginx/
 COPY conf/php/php.ini /etc/
 COPY conf/php/www.conf /etc/php-fpm.d/
 RUN useradd deploy && \
+    chown -R deploy.deploy /var/lib/php && \
     mkdir -p /data/web && \
     ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
