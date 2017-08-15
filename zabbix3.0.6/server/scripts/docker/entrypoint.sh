@@ -42,8 +42,6 @@ fi
 ######################################其他
 chmod +x /usr/bin/monit && chmod 600 /etc/monitrc
 chmod +x /usr/lib/zabbix/alertscripts/alerts.py
-chown -R deploy.deploy /var/lib/php
-chown -R deploy.deploy /data/web/zabbix
 
 _cmd="/usr/bin/monit -d 20 -Ic /etc/monitrc"
 _shell="/bin/bash"

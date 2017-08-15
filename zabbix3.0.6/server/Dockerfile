@@ -29,7 +29,8 @@ RUN yum -y install \
             php-yaf \
             mysql \
             mysql-server && \
-    yum clean all
+    yum clean all && \
+    chown -R deploy.deploy /var/lib/php
 
 # Be aware of the Zabbix version number in the  zabbix22-dbfiles-mysql package(!).
 COPY ./packages /tmp/
@@ -59,7 +60,8 @@ RUN cd /data/web/ && \
     ZABBIX_DIR=`ls |grep zabbix-` && \
     mv ${ZABBIX_DIR} zabbix && \
     mkdir -p /usr/lib/zabbix/alertscripts/ && \
-    mkdir -p /etc/zabbix/alert/
+    mkdir -p /etc/zabbix/alert/ && \
+    chown -R deploy.deploy /data/web/zabbix
 
 # alertscrips
 COPY scripts/alerts/alerts.py /usr/lib/zabbix/alertscripts/
