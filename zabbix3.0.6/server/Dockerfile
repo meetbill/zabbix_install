@@ -1,4 +1,4 @@
-# Version 3.0.6(1.0.2)
+# Version 3.0.6(1.0.3)
 
 FROM centos:centos6
 MAINTAINER meetbill <meetbill@163.com>
@@ -91,4 +91,4 @@ EXPOSE 10051 80 2812
 VOLUME ["/var/lib/mysql", "/etc/zabbix/alert/", "/usr/lib/zabbix/externalscripts", "/etc/zabbix/zabbix_agentd.d"]
 
 ENTRYPOINT ["/bin/docker-zabbix"]
-CMD ["start"]
+CMD ["run"]

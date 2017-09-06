@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#version:1.0.1
+
 _file_marker_mysql="/var/lib/mysql/.mysql-configured"
 
 if [ ! -f "$_file_marker_mysql" ]; then
@@ -47,12 +49,32 @@ _cmd="/usr/bin/monit -d 20 -Ic /etc/monitrc"
 _shell="/bin/bash"
 
 case "$1" in
-    start)
+    run)
         echo "Running Monit... "
-        check_monit=$(ps -ef | grep "${_cmd}"| wc -l)
+        check_monit=$(ps -ef | grep "${_cmd}"| grep -v grep |wc -l)
         echo "[check_monit:]"${check_monit}
-        exec /usr/bin/monit -d 20 -Ic /etc/monitrc
+        if [[ "w${check_monit}" == "w0" ]]
+        then
+            echo "[status] monit"
+            exec /usr/bin/monit -d 20 -Ic /etc/monitrc
+        else
+            echo "[status] loop "
+            while true
+            do 
+                sleep 10
+            done
+        fi
         $_cmd monitor all
+        ;;
+    start)
+        echo "start Monit... "
+        check_monit=$(ps -ef | grep "${_cmd}"| grep -v grep |wc -l)
+        if [[ "w${check_monit}" == "w0" ]]
+        then
+            echo "the monit is not exist"
+        else
+            $_cmd monitor all
+        fi
         ;;
     stop)
         $_cmd stop all
