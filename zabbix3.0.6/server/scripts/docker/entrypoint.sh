@@ -50,14 +50,8 @@ case "$1" in
     start)
         echo "Running Monit... "
         check_monit=$(ps -ef | grep "${_cmd}"| wc -l)
-        if [[ "w${check_monit}" == "w0"  ]]
-        then
-            exec /usr/bin/monit -d 20 -Ic /etc/monitrc
-            RETVAL=$?
-            echo "[run monit]:"${RETVAL}
-        else
-            echo "the monit is Running"
-        fi
+        echo "[check_monit:]"${check_monit}
+        exec /usr/bin/monit -d 20 -Ic /etc/monitrc
         $_cmd monitor all
         ;;
     stop)
