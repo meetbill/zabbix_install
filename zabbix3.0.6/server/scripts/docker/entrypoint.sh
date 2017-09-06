@@ -47,33 +47,44 @@ _cmd="/usr/bin/monit -d 20 -Ic /etc/monitrc"
 _shell="/bin/bash"
 
 case "$1" in
-	start)
+    start)
         echo "Running Monit... "
-        exec /usr/bin/monit -d 20 -Ic /etc/monitrc
+        check_monit=$(ps -ef | grep "${_cmd}"| wc -l)
+        if [[ "w${check_monit}" == "w0"  ]]
+        then
+            exec /usr/bin/monit -d 20 -Ic /etc/monitrc
+            RETVAL=$?
+            echo "[run monit]:"${RETVAL}
+        else
+            echo "the monit is Running"
+        fi
         $_cmd monitor all
-		;;
-	stop)
-		$_cmd stop all
-    RETVAL=$?
-		;;
-	restart)
-		$_cmd restart all
-    RETVAL=$?
-		;;
-  shell)
-    $_shell
-    RETVAL=$?
-		;;
-	status)
-		$_cmd status all
-    RETVAL=$?
-		;;
-  summary)
-		$_cmd summary
-    RETVAL=$?
-		;;
-	*)
-		echo $"Usage: $0 {start|stop|restart|shell|status|summary}"
-		RETVAL=1
+        ;;
+    stop)
+        $_cmd stop all
+        RETVAL=$?
+        echo ${RETVAL}
+        ;;
+    restart)
+        $_cmd restart all
+        RETVAL=$?
+        echo ${RETVAL}
+        ;;
+    shell)
+        $_shell
+        RETVAL=$?
+        echo ${RETVAL}
+        ;;
+    status)
+        $_cmd status
+        RETVAL=$?
+        ;;
+    summary)
+        $_cmd summary
+        RETVAL=$?
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart|shell|status|summary}"
+        RETVAL=1
 esac
 
