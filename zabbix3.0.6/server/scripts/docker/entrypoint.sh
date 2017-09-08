@@ -51,8 +51,16 @@ _shell="/bin/bash"
 case "$1" in
     run)
         echo "Running Monit... "
+        if [[ -e "/var/run/monit.pid" ]]
+        then
+            echo "[check monit.pid]: the monit.pid already exists"
+            rm /var/run/monit.pid
+        else
+            echo "[check monit.pid]: the monit.pid not exists"
+        fi
+        
         check_monit=$(ps -ef | grep "${_cmd}"| grep -v grep |wc -l)
-        echo "[check_monit:]"${check_monit}
+        echo "[check monit process]: "${check_monit}
         if [[ "w${check_monit}" == "w0" ]]
         then
             echo "[status] monit"
