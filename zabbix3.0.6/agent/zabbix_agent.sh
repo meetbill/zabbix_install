@@ -46,22 +46,6 @@ setenforce 0
 # yum repo
 ##############################################
   
-#{{{ServerIP
-function ServerIP()
-{
-	read -p  "what's zabbix-server-IP ?:" g_ZABBIX_SERVER_IP
-    echo ${g_ZABBIX_SERVER_IP}|grep "^[0-9]\{1,3\}\.\([0-9]\{1,3\}\.\)\{2\}[0-9]\{1,3\}$" > /dev/null
-    if [ $? -ne 0 ] 
-    then
-        echo "IP is error"
-        exit 1
-    fi
-	read -p  "zabbix-server-IP is ${g_ZABBIX_SERVER_IP} yes or no:" isY
-	if [ "${isY}" != "y" ] && [ "${isY}" != "Y" ] && [ "${isY}" != "yes" ] && [ "${isY}" != "YES" ];then
-	    exit 1
-	fi
-}
-#}}}
 #{{{AgentHostname
 function AgentHostname()
 {
@@ -120,10 +104,10 @@ function AgentConfig
     then
 	    sed -ri '/EnableRemoteCommands=/a EnableRemoteCommands=1' /etc/zabbix/zabbix_agentd.conf
     fi
-    CHECK=`grep "HostMetadataItem=system.uname" /etc/zabbix/zabbix_agentd.conf | wc -l `
+    CHECK=`grep "^HostMetadata" /etc/zabbix/zabbix_agentd.conf | wc -l `
     if [[ ${CHECK} == 0 ]]
     then
-	    sed -ri '/HostMetadataItem=/a HostMetadataItem=system.uname' /etc/zabbix/zabbix_agentd.conf
+	    sed -ri "/HostMetadata=/a HostMetadata=${HostMetadata}" /etc/zabbix/zabbix_agentd.conf
     fi
 	mkdir -p /var/log/zabbix && chown -R zabbix:zabbix /var/log/zabbix/
 	mkdir -p /var/run/zabbix && chown -R zabbix:zabbix /var/run/zabbix/
@@ -133,15 +117,15 @@ function AgentConfig
 	chkconfig zabbix-agent on
 }
 #}}}
-if [ $# == 2 ]
+if [ $# != 3 ]
 then
+    echo usage: $0 "ServerIP" "hostname" "HostMetadata"
+    echo eg: $0 "192.168.1.128" "ceshi_01" "Linux"
+    exit
+else
 	g_ZABBIX_SERVER_IP=$1
 	g_ZABBIX_AGENT_HOSTNAME=$2
-	AgentInstall
-    AgentConfig
-else
-	ServerIP
-	AgentHostname
+    HostMetadata=$3
 	AgentInstall
     AgentConfig
 fi
