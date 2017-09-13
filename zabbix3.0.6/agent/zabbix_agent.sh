@@ -67,25 +67,6 @@ function AgentHostname()
 #{{{AgentInstall
 function AgentInstall()
 {
-    info_echo "配置yum源......"
-    if [ ! -f zabbix.repo ]; then
-    cat> /etc/yum.repos.d/zabbix.repo <<'EOF'
- 
-[zabbix]
-name=Zabbix Official Repository-$basearch
-baseurl=http://repo.zabbix.com/zabbix/3.0/rhel/6/$basearch/
-enabled=1
-gpgcheck=0
-  
-[zabbix-non-supported]
-name=Zabbix Official Repository non-supported-$basearch
-baseurl=http://repo.zabbix.com/non-supported/rhel/6/$basearch/
-enabled=1
-gpgcheck=0
- 
-EOF
- 
-    fi
     rpm -ivh zabbix-agent.rpm
 }
 #}}}
@@ -109,6 +90,36 @@ function AgentConfig
     then
 	    sed -ri "/HostMetadata=/a HostMetadata=${HostMetadata}" /etc/zabbix/zabbix_agentd.conf
     fi
+    
+    # zabbix_agentd.conf.d
+    CHECK=`grep "^Include=/etc/zabbix/zabbix_agentd.conf.d/" /etc/zabbix/zabbix_agentd.conf|wc -l`
+    if [[ "w$CHECK" == "w0" ]]
+    then
+        mkdir -p /etc/zabbix/zabbix_agentd.conf.d/
+        echo 'Include=/etc/zabbix/zabbix_agentd.conf.d/' >> /etc/zabbix/zabbix_agentd.conf
+    fi
+
+    # UnsafeUserParameters=1
+    CHECK=`grep "^UnsafeUserParameters=1" /etc/zabbix/zabbix_agentd.conf|wc -l`
+    if [[ "w$CHECK" == "w0" ]]
+    then
+        sed -ri '/UnsafeUserParameters=/a UnsafeUserParameters=1' /etc/zabbix/zabbix_agentd.conf
+    fi
+
+    # Timeout=10
+    CHECK=`grep "^Timeout=3" /etc/zabbix/zabbix_agentd.conf|wc -l`
+    if [[ "w$CHECK" == "w0" ]]
+    then
+        sed -ri '/Timeout=3/a Timeout=10' /etc/zabbix/zabbix_agentd.conf
+    fi
+
+    # AllowRoot=1
+    CHECK=`grep "^AllowRoot=1" /etc/zabbix/zabbix_agentd.conf|wc -l`
+    if [[ "w$CHECK" == "w0" ]]
+    then
+        sed -ri '/AllowRoot=0/a AllowRoot=1' /etc/zabbix/zabbix_agentd.conf
+    fi
+
 	mkdir -p /var/log/zabbix && chown -R zabbix:zabbix /var/log/zabbix/
 	mkdir -p /var/run/zabbix && chown -R zabbix:zabbix /var/run/zabbix/
 	chmod +x /etc/init.d/zabbix-agent
