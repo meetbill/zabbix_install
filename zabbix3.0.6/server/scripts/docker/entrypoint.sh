@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#version:1.0.1
+#version:1.0.2
 
 _file_marker_mysql="/var/lib/mysql/.mysql-configured"
 
@@ -51,13 +51,17 @@ _shell="/bin/bash"
 case "$1" in
     run)
         echo "Running Monit... "
-        if [[ -e "/var/run/monit.pid" ]]
-        then
-            echo "[check monit.pid]: the monit.pid already exists"
-            rm /var/run/monit.pid
-        else
-            echo "[check monit.pid]: the monit.pid not exists"
-        fi
+        pid_list="/var/run/mysqld/mysqld.pid /var/run/zabbix/zabbix_server.pid /var/run/php-fpm/php-fpm.pid /var/run/nginx.pid"
+        for pid in ${pid_list}
+        do 
+            if [[ -e ${pid} ]]
+            then
+                echo "[check ${pid}]: the  pid already exists"
+                [[ -n ${pid} ]] && rm ${pid}
+            else
+                echo "[check ${pid}]: the pid not exists"
+            fi
+        done
         
         check_monit=$(ps -ef | grep "${_cmd}"| grep -v grep |wc -l)
         echo "[check monit process]: "${check_monit}
