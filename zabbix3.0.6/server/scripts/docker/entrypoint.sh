@@ -1,8 +1,9 @@
 #!/bin/bash
 
-#version:1.0.2
+#version:1.0.3
 
 _file_marker_mysql="/var/lib/mysql/.mysql-configured"
+_file_marker_debug="/var/lib/mysql/.meetbill-debug"
 
 if [ ! -f "$_file_marker_mysql" ]; then
     /usr/bin/mysql_install_db
@@ -51,7 +52,7 @@ _shell="/bin/bash"
 case "$1" in
     run)
         echo "Running Monit... "
-        pid_list="/var/run/mysqld/mysqld.pid /var/run/zabbix/zabbix_server.pid /var/run/php-fpm/php-fpm.pid /var/run/nginx.pid"
+        pid_list="/var/run/mysqld/mysqld.pid /var/run/zabbix/zabbix_server.pid /var/run/php-fpm/php-fpm.pid /var/run/nginx.pid /var/run/monit.pid"
         for pid in ${pid_list}
         do 
             if [[ -e ${pid} ]]
@@ -63,20 +64,18 @@ case "$1" in
             fi
         done
         
-        check_monit=$(ps -ef | grep "${_cmd}"| grep -v grep |wc -l)
-        echo "[check monit process]: "${check_monit}
-        if [[ "w${check_monit}" == "w0" ]]
+        if [[ -f "$_file_marker_debug" ]]
         then
-            echo "[status] monit"
-            exec /usr/bin/monit -d 20 -Ic /etc/monitrc
-        else
-            echo "[status] loop "
+            echo "[status] debug======================================"
             while true
             do 
                 sleep 10
             done
+        else
+            echo "[status] monit :-)"
+            exec /usr/bin/monit -d 20 -Ic /etc/monitrc
+            $_cmd monitor all
         fi
-        $_cmd monitor all
         ;;
     start)
         echo "start Monit... "
@@ -84,6 +83,8 @@ case "$1" in
         if [[ "w${check_monit}" == "w0" ]]
         then
             echo "the monit is not exist"
+            exec /usr/bin/monit -d 20 -Ic /etc/monitrc
+            $_cmd monitor all
         else
             $_cmd monitor all
         fi
