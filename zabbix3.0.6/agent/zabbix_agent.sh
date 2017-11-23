@@ -37,8 +37,8 @@ if [ "$(awk '{if ( $3 >= 6.0 ) print "CentOS 6.x"}' /etc/redhat-release 2>/dev/n
 fi
 
 # turn off the iptables                                                                                         
-/etc/init.d/iptables stop
-chkconfig iptables off 
+# /etc/init.d/iptables stop
+# chkconfig iptables off 
 # turn off the selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 setenforce 0   
@@ -57,11 +57,6 @@ function AgentHostname()
     sed -i "/^127.0.0.1/s/^127.0.0.1/&    ${g_ZABBIX_AGENT_HOSTNAME}/g" /etc/hosts
     sed -i "/^::1/s/^::1/&    ${g_ZABBIX_AGENT_HOSTNAME}/g" /etc/hosts
     sed -i "s/^HOSTNAME.*/HOSTNAME=${g_ZABBIX_AGENT_HOSTNAME}/g" /etc/sysconfig/network
-    
-	#read -p  "the agent hostname is ${g_ZABBIX_AGENT_HOSTNAME} yes or no:" isY
-	#if [ "${isY}" != "y" ] && [ "${isY}" != "Y" ] && [ "${isY}" != "yes" ] && [ "${isY}" != "YES" ];then
-	#exit 1
-	#fi
 }
 #}}}
 #{{{AgentInstall
